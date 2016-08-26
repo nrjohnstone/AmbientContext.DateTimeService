@@ -41,4 +41,4 @@ build:
   verbosity: minimal
 
 artifacts:
-- path: NuGet/Release/*.nupkg
+- path: NuGet/Release/AmbientContext.DateTimeService.nupkg

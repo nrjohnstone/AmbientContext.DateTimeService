@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("AmbientContext.DateTimeService")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("AmbientContext service for DateTime")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Nathan Johnstone")]
 [assembly: AssemblyProduct("AmbientContext.DateTimeService")]
-[assembly: AssemblyCopyright("Copyright ©  2016")]
+[assembly: AssemblyCopyright("Copyright © Nathan Johnstone 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

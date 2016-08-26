@@ -33,7 +33,7 @@ cache:
 - ./src/packages -> **\packages.config
 
 before_build:
-- nuget restore ./src/*.sln
+- nuget restore ./src/AmbientContext.DateTimeService.sln
 
 build:
   project: ./src/*.sln

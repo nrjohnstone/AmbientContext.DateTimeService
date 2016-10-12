@@ -46,7 +46,7 @@
   <ItemGroup>
     <Compile Include="AmbientDateTimeService.cs" />
     <Compile Include="DateTimeAdapter.cs" />
-    <Compile Include="IDateTime.cs" />
+    <Compile Include="IDateTimeService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

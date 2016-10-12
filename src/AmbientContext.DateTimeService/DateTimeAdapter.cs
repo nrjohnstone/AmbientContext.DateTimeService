@@ -2,7 +2,7 @@ using System;
 
 namespace AmbientContext.DateTimeService
 {
-    public class DateTimeAdapter : IDateTime
+    public class DateTimeAdapter : IDateTimeService
     {
         public DateTime Now => DateTime.Now;
         public DateTime UtcNow => DateTime.UtcNow;

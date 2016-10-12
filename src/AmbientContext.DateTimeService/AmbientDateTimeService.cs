@@ -16,5 +16,6 @@ namespace AmbientContext.DateTimeService
         public DateTime Now => Instance.Now;
         public DateTime UtcNow => Instance.UtcNow;
         public DateTime Today => Instance.Today;
+        public DateTime Tomorrow => Instance.Tomorrow;
     }
 }

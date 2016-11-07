@@ -15,8 +15,9 @@ var configuration = Argument("configuration", "Release");
 
 // Define directories.
 var solutionDir = Directory("./src");
+var projectDir = solutionDir + Directory("AmbientContext.DateTimeService");
 var solutionFile = solutionDir + File("AmbientContext.DateTimeService.sln");
-var buildDir = Directory("./src/AmbientContext.DateTimeService/bin") + Directory(configuration);
+var buildDir = projectDir + Directory("bin") + Directory(configuration);
 
 //////////////////////////////////////////////////////////////////////
 // TASKS
@@ -94,12 +95,16 @@ Task("Run-Unit-Tests")
 Task("Update-Version")
     .Does(() => 
 {
-    GitVersion(new GitVersionSettings {
-        UpdateAssemblyInfo = true});
-    string version = GitVersion().FullSemVer;
+    GitVersion(new GitVersionSettings { UpdateAssemblyInfo = true,
+		UpdateAssemblyInfoFilePath = projectDir + File(@"Properties\AssemblyVersionInfo.cs") });
+
+    string version = GitVersion().NuGetVersion;
+	Console.WriteLine("New version string =" + version);
+
     if (AppVeyor.IsRunningOnAppVeyor) {
         AppVeyor.UpdateBuildVersion(version);
     }
+
     var projectFiles = System.IO.Directory.EnumerateFiles(@".\", "project.json", SearchOption.AllDirectories).ToArray();
 
     foreach(var file in projectFiles)

@@ -95,15 +95,16 @@ Task("Run-Unit-Tests")
 Task("Update-Version")
     .Does(() => 
 {
-    GitVersion(new GitVersionSettings { UpdateAssemblyInfo = true});
+    GitVersion(new GitVersionSettings { UpdateAssemblyInfo = true,
+		UpdateAssemblyInfoFilePath = projectDir + File(@"Properties\AssemblyVersionInfo.cs") });
 
     string version = GitVersion().NuGetVersion;
-	Console.WriteLine("Current NuGetVersion=" + version);
+	Console.WriteLine("New version string =" + version);
 
     if (AppVeyor.IsRunningOnAppVeyor) {
         AppVeyor.UpdateBuildVersion(version);
     }
-    
+
     var projectFiles = System.IO.Directory.EnumerateFiles(@".\", "project.json", SearchOption.AllDirectories).ToArray();
 
     foreach(var file in projectFiles)

@@ -30,8 +30,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AmbientContext, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\AmbientContext.1.1.0\lib\netstandard1.1\AmbientContext.dll</HintPath>
+    <Reference Include="AmbientContext, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\AmbientContext.2.0.0\lib\net45\AmbientContext.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

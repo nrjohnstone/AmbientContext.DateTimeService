@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace AmbientContext.DateTimeService
 {
-    public class AmbientDateTimeService : AmbientService<IDateTime>, IDateTime
+    public class AmbientDateTimeService : AmbientService<IDateTimeService>, IDateTimeService
     {
-        protected override IDateTime DefaultCreate()
+        protected override IDateTimeService DefaultCreate()
         {
             return new DateTimeAdapter();
         }
@@ -16,5 +16,6 @@ namespace AmbientContext.DateTimeService
         public DateTime Now => Instance.Now;
         public DateTime UtcNow => Instance.UtcNow;
         public DateTime Today => Instance.Today;
+        public DateTime Tomorrow => Instance.Tomorrow;
     }
 }

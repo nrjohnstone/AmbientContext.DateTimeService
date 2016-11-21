@@ -14,9 +14,10 @@ var configuration = Argument("configuration", "Release");
 //////////////////////////////////////////////////////////////////////
 
 // Define directories.
-var solutionDir = Directory("./src");
+var solutionDir = Directory("./");
 var solutionFile = solutionDir + File("AmbientContext.DateTimeService.sln");
-var buildDir = Directory("./src/AmbientContext.DateTimeService/bin") + Directory(configuration);
+var projectDir = Directory("./src/AmbientContext.DateTimeService");
+var buildDir = projectDir + Directory("bin") + Directory(configuration);
 
 //////////////////////////////////////////////////////////////////////
 // TASKS
@@ -61,6 +62,7 @@ Task("Pack")
 
 
 Task("Build")
+    .IsDependentOn("Clean")
     .IsDependentOn("Restore-NuGet-Packages")
     .IsDependentOn("Update-Version")
     .Does(() =>
@@ -71,15 +73,6 @@ Task("Build")
     MSBuild(solutionFile, settings =>
     settings.SetConfiguration(configuration));
 });
-
-
-Task("Rebuild")
-    .IsDependentOn("Clean")
-    .IsDependentOn("Restore-NuGet-Packages")
-    .IsDependentOn("Build")
-    .IsDependentOn("Run-Unit-Tests")
-    .Does(() =>
-{ });
 
 
 Task("Run-Unit-Tests")
@@ -94,12 +87,16 @@ Task("Run-Unit-Tests")
 Task("Update-Version")
     .Does(() => 
 {
-    GitVersion(new GitVersionSettings {
-        UpdateAssemblyInfo = true});
-    string version = GitVersion().FullSemVer;
+    GitVersion(new GitVersionSettings { UpdateAssemblyInfo = true,
+		UpdateAssemblyInfoFilePath = projectDir + File(@"Properties\AssemblyVersionInfo.cs") });
+
+    string version = GitVersion().NuGetVersion;
+	Console.WriteLine("New version string =" + version);
+
     if (AppVeyor.IsRunningOnAppVeyor) {
         AppVeyor.UpdateBuildVersion(version);
     }
+
     var projectFiles = System.IO.Directory.EnumerateFiles(@".\", "project.json", SearchOption.AllDirectories).ToArray();
 
     foreach(var file in projectFiles)
@@ -112,29 +109,6 @@ Task("Update-Version")
     }
 });
 
-
-Task("Get-DotNetCli")
-    .Does(() =>
-{         
-    string userProfile = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-    string dotNetPath = userProfile + @"Local\Microsoft\dotnet";
-    
-    if (!Environment.GetEnvironmentVariable("Path", EnvironmentVariableTarget.Machine).Contains(dotNetPath))
-    {
-        DownloadFile("https://raw.githubusercontent.com/dotnet/cli/rel/1.0.0/scripts/obtain/dotnet-install.ps1", "./tools/dotnet-install.ps1");
-        var version = "1.0.0-preview2-003121";
-        StartPowershellFile("./tools/dotnet-install.ps1", args =>
-            {
-                args.Append("Version", version);
-            });
-
-        
-        string path = Environment.GetEnvironmentVariable("Path", EnvironmentVariableTarget.Machine) + ";" + dotNetPath;
-        Console.WriteLine(path);
-        Environment.SetEnvironmentVariable("Path", path, EnvironmentVariableTarget.Machine);
-        Environment.SetEnvironmentVariable("Path", path);
-    }
-});
 
 //////////////////////////////////////////////////////////////////////
 // TASK TARGETS

@@ -16,6 +16,7 @@ var configuration = Argument("configuration", "Release");
 // Define directories.
 var solutionDir = Directory("./");
 var solutionFile = solutionDir + File("AmbientContext.DateTimeService.sln");
+var projectDir = Directory("./src/AmbientContext.DateTimeService");
 var buildDir = projectDir + Directory("bin") + Directory(configuration);
 
 //////////////////////////////////////////////////////////////////////

@@ -87,8 +87,17 @@ Task("Run-Unit-Tests")
 Task("Update-Version")
     .Does(() => 
 {
-    GitVersion(new GitVersionSettings { UpdateAssemblyInfo = true,
-		UpdateAssemblyInfoFilePath = projectDir + File(@"Properties\AssemblyVersionInfo.cs") });
+     var assemblyInfoFile = File(projectDir + File("Properties/AssemblyVersionInfo.cs"));
+
+    if (!FileExists(assemblyInfoFile))
+    {
+        Information("Assembly version file does not exist : " + assemblyInfoFile.Path);
+        CopyFile(projectDir + File("./AssemblyVersionInfo.template.cs"), assemblyInfoFile);
+    }
+
+    GitVersion(new GitVersionSettings { 
+        UpdateAssemblyInfo = true,
+		UpdateAssemblyInfoFilePath = assemblyInfoFile });
 
     string version = GitVersion().NuGetVersion;
 	Console.WriteLine("New version string =" + version);

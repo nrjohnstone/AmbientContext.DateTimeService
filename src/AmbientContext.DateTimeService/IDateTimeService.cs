@@ -27,11 +27,11 @@ namespace AmbientContext.DateTimeService
         /// <summary>
         /// Return a new instance of Stopwatch via IStopwatch
         /// </summary>
-        IStopwatch CreateStopwatch { get; }
+        IStopwatch CreateStopwatch();
 
         /// <summary>
         /// Return a new instance of Stopwatch and start it running via IStopwatch
         /// </summary>
-        IStopwatch StartNewStopwatch { get; }
+        IStopwatch StartNewStopwatch();
     }
 }

@@ -4,4 +4,3 @@ branches:
   dev(elop)?(ment)?$: {}
 ignore:
   sha: []
-

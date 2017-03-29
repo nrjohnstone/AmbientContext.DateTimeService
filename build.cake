@@ -96,7 +96,7 @@ Task("Update-Version")
     }
     var outputType = GitVersionOutput.Json;
     
-    if (TeamCity.IsRunningOnTeamCity)
+    if (AppVeyor.IsRunningOnAppVeyor)
     {
         outputType = GitVersionOutput.BuildServer;
     }

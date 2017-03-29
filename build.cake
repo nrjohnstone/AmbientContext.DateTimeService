@@ -94,28 +94,20 @@ Task("Update-Version")
         Information("Assembly version file does not exist : " + assemblyInfoFile.Path);
         CopyFile(projectDir + File("./AssemblyVersionInfo.template.cs"), assemblyInfoFile);
     }
+    var outputType = GitVersionOutput.Json;
+    
+    if (TeamCity.IsRunningOnTeamCity)
+    {
+        outputType = GitVersionOutput.BuildServer;
+    }
 
     GitVersion(new GitVersionSettings { 
+        OutputType = outputType,
         UpdateAssemblyInfo = true,
 		UpdateAssemblyInfoFilePath = assemblyInfoFile });
 
     string version = GitVersion().NuGetVersion;
 	Console.WriteLine("New version string =" + version);
-
-    if (AppVeyor.IsRunningOnAppVeyor) {
-        AppVeyor.UpdateBuildVersion(version);
-    }
-
-    var projectFiles = System.IO.Directory.EnumerateFiles(@".\", "project.json", SearchOption.AllDirectories).ToArray();
-
-    foreach(var file in projectFiles)
-    {
-        var project = Newtonsoft.Json.Linq.JObject.Parse(System.IO.File.ReadAllText(file, Encoding.UTF8));
-
-        project["version"].Replace(version);
-
-        System.IO.File.WriteAllText(file, project.ToString(), Encoding.UTF8);
-    }
 });
 
 

@@ -8,5 +8,18 @@ namespace AmbientContext.DateTimeService
         public DateTime UtcNow => DateTime.UtcNow;
         public DateTime Today => DateTime.Today;
         public DateTime Tomorrow => DateTime.Now.AddDays(1);
+        public IStopwatch CreateStopwatch => new StopwatchAdapter();
+
+        public IStopwatch StartNewStopwatch
+        {
+            get
+            {
+                var stopwatch = new StopwatchAdapter();
+                stopwatch.Start();
+                return stopwatch;                
+            }
+        }
+
+        
     }
 }

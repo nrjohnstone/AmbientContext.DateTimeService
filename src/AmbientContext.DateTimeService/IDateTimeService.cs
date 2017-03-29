@@ -23,5 +23,15 @@ namespace AmbientContext.DateTimeService
         /// Gets the date 1 day from Now
         /// </summary>
         DateTime Tomorrow { get; }
+
+        /// <summary>
+        /// Return a new instance of Stopwatch via IStopwatch
+        /// </summary>
+        IStopwatch CreateStopwatch { get; }
+
+        /// <summary>
+        /// Return a new instance of Stopwatch and start it running via IStopwatch
+        /// </summary>
+        IStopwatch StartNewStopwatch { get; }
     }
 }

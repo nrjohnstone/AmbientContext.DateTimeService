@@ -54,8 +54,10 @@
     <Compile Include="AmbientDateTimeService.cs" />
     <Compile Include="DateTimeAdapter.cs" />
     <Compile Include="IDateTimeService.cs" />
+    <Compile Include="IStopwatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\AssemblyVersionInfo.cs" />
+    <Compile Include="StopwatchAdapter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="AmbientContext.DateTimeService.nuspec">

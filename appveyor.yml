@@ -12,6 +12,7 @@ branches:
   - develop
   - release
 
+skip_tags: true
 configuration: Release
 
 nuget:

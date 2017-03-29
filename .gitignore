@@ -218,3 +218,4 @@ _Pvt_Extensions
 
 tools/*
 *.bak
+src/AmbientContext\.DateTimeService/Properties/AssemblyVersionInfo\.cs

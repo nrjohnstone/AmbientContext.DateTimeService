@@ -58,6 +58,7 @@ Task("Pack")
 		OutputDirectory = packagesDir,
 		MSBuildSettings = new DotNetCoreMSBuildSettings()
 								.WithProperty("PackageVersion", packageVersion)
+								.WithProperty("Copyright", $"Copyright © Nathan Johnstone {DateTime.Now.Year}")
 	};
 
 	GetFiles("./src/*/*.csproj")
@@ -80,6 +81,7 @@ Task("Build")
 								.SetVersion(assemblyVersion)
 								.WithProperty("FileVersion", packageVersion)
 								.WithProperty("InformationalVersion", packageVersion)
+								.WithProperty("Copyright", $"Copyright © Nathan Johnstone {DateTime.Now.Year}")
 	};
 	DotNetCoreBuild(solutionFile, settings);
 });

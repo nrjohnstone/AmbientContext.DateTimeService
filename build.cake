@@ -1,7 +1,8 @@
-#addin "Newtonsoft.Json"
-#addin "Cake.Powershell"
-#tool "nuget:?package=GitVersion.CommandLine"
-#tool "nuget:?package=xunit.runner.console"
+#addin "Newtonsoft.Json&version=12.0.2"
+#addin "Cake.Powershell&version=0.4.8"
+
+#tool "nuget:?package=GitVersion.CommandLine&version=4.0.0"
+#tool "nuget:?package=xunit.runner.console&version=2.4.1"
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
 //////////////////////////////////////////////////////////////////////

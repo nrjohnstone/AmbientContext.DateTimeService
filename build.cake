@@ -3,12 +3,16 @@
 
 #tool "nuget:?package=GitVersion.CommandLine&version=4.0.0"
 #tool "nuget:?package=xunit.runner.console&version=2.4.1"
+
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
 //////////////////////////////////////////////////////////////////////
 
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
+
+var assemblyVersion = "1.0.0";
+var packageVersion = "1.0.0";
 
 //////////////////////////////////////////////////////////////////////
 // PREPARATION
@@ -18,7 +22,9 @@ var configuration = Argument("configuration", "Release");
 var solutionDir = Directory("./");
 var solutionFile = solutionDir + File("AmbientContext.DateTimeService.sln");
 var projectDir = Directory("./src/AmbientContext.DateTimeService");
-var buildDir = projectDir + Directory("bin") + Directory(configuration);
+
+var artifactsDir = MakeAbsolute(Directory("artifacts"));
+var packagesDir = artifactsDir.Combine(Directory("packages"));
 
 //////////////////////////////////////////////////////////////////////
 // TASKS
@@ -26,59 +32,61 @@ var buildDir = projectDir + Directory("bin") + Directory(configuration);
 
 
 Task("Clean")
-    .Does(() =>
-{
-    CleanDirectory(buildDir);
+.Does(() => {
+	CleanDirectory(artifactsDir);
+	DotNetCoreClean(solutionFile);
 });
 
 
-Task("Restore-NuGet-Packages")
-    .Does(() =>
+Task("Restore")
+.IsDependentOn("Clean")
+.Does(() =>
 {
-    NuGetRestore(solutionFile);
+    DotNetCoreRestore(solutionFile);
 });
 
 
 Task("Pack")
-    .Does(() => 
-{
-    EnsureDirectoryExists("./artifacts");
-    string version = GitVersion().NuGetVersion;
+.IsDependentOn("Build")
+.Does(() =>  {
+	var settings = new DotNetCorePackSettings
+	{
+		Configuration = configuration,
+		NoBuild = true,
+		NoRestore = true,
+		IncludeSymbols = true,
+		OutputDirectory = packagesDir,
+		MSBuildSettings = new DotNetCoreMSBuildSettings()
+								.WithProperty("PackageVersion", packageVersion)
+	};
 
-    var binDir = Directory("./bin") ;
-    var nugetPackageDir = Directory("./artifacts");
-
-    var nugetFilePaths = GetFiles("./src/AmbientContext.DateTimeService/*.csproj");
-
-    var nuGetPackSettings = new NuGetPackSettings
-    {   
-        Version = version,
-        BasePath = binDir + Directory(configuration),
-        OutputDirectory = nugetPackageDir,
-        ArgumentCustomization = args => args.Append("-Prop Configuration=" + configuration)
-    };
-
-    NuGetPack(nugetFilePaths, nuGetPackSettings);
+	GetFiles("./src/*/*.csproj")
+		.ToList()
+		.ForEach(f => DotNetCorePack(f.FullPath, settings));
 });
 
 
 Task("Build")
-    .IsDependentOn("Clean")
-    .IsDependentOn("Restore-NuGet-Packages")
-    .IsDependentOn("Update-Version")
-    .Does(() =>
-{
-    DotNetCoreRestore();
-
-    // Use MSBuild
-    MSBuild(solutionFile, settings =>
-    settings.SetConfiguration(configuration));
+.IsDependentOn("Clean")
+.IsDependentOn("Restore")
+.IsDependentOn("Update-Version")
+.Does(() => {
+	var settings = new DotNetCoreBuildSettings
+	{
+		Configuration = configuration,
+		NoIncremental = true,
+		NoRestore = true,
+		MSBuildSettings = new DotNetCoreMSBuildSettings()
+								.SetVersion(assemblyVersion)
+								.WithProperty("FileVersion", packageVersion)
+								.WithProperty("InformationalVersion", packageVersion)
+	};
+	DotNetCoreBuild(solutionFile, settings);
 });
 
 
 Task("Run-Unit-Tests")
-    .Does(() =>
-{
+.Does(() => {
     //var testAssemblies = GetFiles(".\\test\\AmbientContext.Tests\\bin\\" + configuration + "\\net451\\*\\AmbientContext.Tests.dll");
     //Console.WriteLine(testAssemblies.Count());
     //XUnit2(testAssemblies);
@@ -86,15 +94,8 @@ Task("Run-Unit-Tests")
 
 
 Task("Update-Version")
-    .Does(() => 
-{
-     var assemblyInfoFile = File(projectDir + File("Properties/AssemblyVersionInfo.cs"));
-
-    if (!FileExists(assemblyInfoFile))
-    {
-        Information("Assembly version file does not exist : " + assemblyInfoFile.Path);
-        CopyFile(projectDir + File("./AssemblyVersionInfo.template.cs"), assemblyInfoFile);
-    }
+.IsDependentOn("Restore")
+.Does(() => {
     var outputType = GitVersionOutput.Json;
     
     if (AppVeyor.IsRunningOnAppVeyor)
@@ -102,13 +103,15 @@ Task("Update-Version")
         outputType = GitVersionOutput.BuildServer;
     }
 
-    GitVersion(new GitVersionSettings { 
+    var gitVersion = GitVersion(new GitVersionSettings { 
         OutputType = outputType,
-        UpdateAssemblyInfo = true,
-		UpdateAssemblyInfoFilePath = assemblyInfoFile });
+		NoFetch = true});
 
-    string version = GitVersion().NuGetVersion;
-	Console.WriteLine("New version string =" + version);
+	assemblyVersion = gitVersion.AssemblySemVer;
+	packageVersion = gitVersion.NuGetVersion;
+
+    Information($"AssemblySemVer: {assemblyVersion}");
+	Information($"NuGetVersion: {packageVersion}");
 });
 
 

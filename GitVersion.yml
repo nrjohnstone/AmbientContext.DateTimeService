@@ -1,6 +1,6 @@
 assembly-versioning-scheme: None
-mode: ContinuousDelivery
 branches:
-  dev(elop)?(ment)?$: {}
+  develop:
+    mode: ContinuousDeployment
 ignore:
   sha: []

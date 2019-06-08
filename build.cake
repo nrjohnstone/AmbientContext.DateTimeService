@@ -11,7 +11,6 @@
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
 
-var assemblyVersion = "1.0.0";
 var packageVersion = "1.0.0";
 
 //////////////////////////////////////////////////////////////////////
@@ -58,7 +57,7 @@ Task("Pack")
 		OutputDirectory = packagesDir,
 		MSBuildSettings = new DotNetCoreMSBuildSettings()
 								.WithProperty("PackageVersion", packageVersion)
-								.WithProperty("Copyright", $"Copyright © Nathan Johnstone {DateTime.Now.Year}")
+								.WithProperty("Copyright", $"Copyright ï¿½ Nathan Johnstone {DateTime.Now.Year}")
 	};
 
 	GetFiles("./src/*/*.csproj")
@@ -66,6 +65,29 @@ Task("Pack")
 		.ForEach(f => DotNetCorePack(f.FullPath, settings));
 });
 
+Task("Update-Version")
+.IsDependentOn("Restore")
+.Does(() => {
+	try {
+		var outputType = GitVersionOutput.Json;
+    
+		if (AppVeyor.IsRunningOnAppVeyor)
+		{
+			outputType = GitVersionOutput.BuildServer;
+		}
+
+		var gitVersion = GitVersion(new GitVersionSettings { 
+			OutputType = outputType,
+			NoFetch = true,
+			Verbosity = GitVersionVerbosity.Debug
+		});
+		packageVersion = gitVersion.NuGetVersion;
+
+		Information($"NuGetVersion: {packageVersion}");
+	} catch(Exception ex) {
+		Error(ex.Message);
+	}
+});
 
 Task("Build")
 .IsDependentOn("Clean")
@@ -78,10 +100,10 @@ Task("Build")
 		NoIncremental = true,
 		NoRestore = true,
 		MSBuildSettings = new DotNetCoreMSBuildSettings()
-								.SetVersion(assemblyVersion)
+								.SetVersion(packageVersion)
 								.WithProperty("FileVersion", packageVersion)
 								.WithProperty("InformationalVersion", packageVersion)
-								.WithProperty("Copyright", $"Copyright © Nathan Johnstone {DateTime.Now.Year}")
+								.WithProperty("Copyright", $"Copyright Â© Nathan Johnstone {DateTime.Now.Year}")
 	};
 	DotNetCoreBuild(solutionFile, settings);
 });
@@ -92,28 +114,6 @@ Task("Run-Unit-Tests")
     //var testAssemblies = GetFiles(".\\test\\AmbientContext.Tests\\bin\\" + configuration + "\\net451\\*\\AmbientContext.Tests.dll");
     //Console.WriteLine(testAssemblies.Count());
     //XUnit2(testAssemblies);
-});
-
-
-Task("Update-Version")
-.IsDependentOn("Restore")
-.Does(() => {
-    var outputType = GitVersionOutput.Json;
-    
-    if (AppVeyor.IsRunningOnAppVeyor)
-    {
-        outputType = GitVersionOutput.BuildServer;
-    }
-
-    var gitVersion = GitVersion(new GitVersionSettings { 
-        OutputType = outputType,
-		NoFetch = true});
-
-	assemblyVersion = gitVersion.AssemblySemVer;
-	packageVersion = gitVersion.NuGetVersion;
-
-    Information($"AssemblySemVer: {assemblyVersion}");
-	Information($"NuGetVersion: {packageVersion}");
 });
 
 

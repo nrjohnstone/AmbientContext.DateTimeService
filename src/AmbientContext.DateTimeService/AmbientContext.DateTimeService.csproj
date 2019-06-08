@@ -7,7 +7,7 @@
     <Authors>Nathan Johnstone</Authors>
     <Company>Nathan Johnstone</Company>
     <Product>AmbientContext.DateTimeService</Product>
-    <Copyright>Copyright © Nathan Johnstone 2019</Copyright>
+    <Copyright> 2019</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
